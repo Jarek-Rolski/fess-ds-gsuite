@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -131,6 +132,9 @@ public class GoogleDriveDataStore extends AbstractDataStore {
     protected static final String FILE_URL = "url";
     protected static final String FILE_SIZE = "size";
     protected static final String FILE_ROLES = "roles";
+
+    protected static final String FILE_HOST = "host";
+    protected static final String FILE_SITE = "site";
 
     protected String extractorName = "tikaExtractor";
 
@@ -299,6 +303,29 @@ public class GoogleDriveDataStore extends AbstractDataStore {
                 throw new MaxLengthExceededException(
                         "The content length (" + size + " byte) is over " + configMap.get(MAX_SIZE) + " byte. The url is " + url);
             }
+
+            String path = file.getName();
+            String file_id = file.getId();
+            String file_name = file.getName();
+            List<String> file_parents = file.getParents();
+            String parent_id;
+            File file_response;
+            while (file_parents != null) {
+                parent_id = file_parents.get(0);
+                file_id = parent_id;
+                file_response = client.getDrive().files().get(file_id).setFields("name, parents").setSupportsTeamDrives(true).execute();
+                file_name = file_response.getName();
+                file_parents = file_response.getParents();
+                if (Objects.equals(file_name, "Drive") && (file_parents == null)) {
+                    try {
+                        file_name = client.getDrive().teamdrives().get(file_id).execute().getName();
+                    } catch (Exception ignored) {}
+                }
+                path = file_name + "\\" + path;
+            }
+
+            fileMap.put(FILE_SITE, path.toString());
+            fileMap.put(FILE_HOST, file_name.toString());
 
             final String filetype = ComponentUtil.getFileTypeHelper().get(mimetype);
             fileMap.put(FILE_NAME, file.getName());

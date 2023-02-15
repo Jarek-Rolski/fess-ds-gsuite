@@ -5,13 +5,8 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-    - master
-    - "*.x"
-  pull_request:
-    branches:
-    - master
-    - "*.x"
+    tags:
+      - release
 
 jobs:
   build:
@@ -42,3 +37,23 @@ jobs:
         mvn install
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        release_name: fess-ds-gsuite-14.6.1-FoldersPath
+        tag_name: 14.6.1-FoldersPath
+        body: This fork provides folders path information to crawled files.
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: upload linux artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: target/fess-ds-gsuite-14.6.1-FoldersPath.jar
+        asset_name: fess-ds-gsuite-14.6.1-FoldersPath.jar
+        asset_content_type: application/java-archive

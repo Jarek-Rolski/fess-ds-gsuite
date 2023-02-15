@@ -6,14 +6,16 @@ G Suite Data Store for Fess
 
 G Suite Data Store is an extension for Fess Data Store Crawling.
 
+This fork adds folder path to available file information.
+
 ## Download
 
-See [Maven Repository](https://repo1.maven.org/maven2/org/codelibs/fess/fess-ds-gsuite/).
+See [FoldersPath Release](https://github.com/Jarek-Rolski/fess-ds-gsuite/releases/tag/14.6.1-FoldersPath).
 
 ## Installation
 
-1. Download fess-ds-gsuite-X.X.X.jar
-2. Copy fess-ds-gsuite-X.X.X.jar to $FESS\_HOME/app/WEB-INF/lib or /usr/share/fess/app/WEB-INF/lib
+1. Download  fess-ds-gsuite-14.6.1-FoldersPath.jar 
+2. Copy  fess-ds-gsuite-14.6.1-FoldersPath.jar  to $FESS\_HOME/app/WEB-INF/lib or /usr/share/fess/app/WEB-INF/lib
 
 ## Getting Started
 
@@ -41,6 +43,8 @@ content_length=file.size
 filetype=file.filetype
 role=file.roles
 filename=file.name
+host=file.host
+site=file.site
 ```
 
 | Key | Value |
@@ -53,3 +57,5 @@ filename=file.name
 | file.modified_time | The last time the file was modified by anyone. |
 | file.web_view_link | A link for opening the file in a relevant Google editor or viewer in a browser. |
 | file.thumbnail_link | A short-lived link to the file's thumbnail, if available. Typically lasts on the order of hours. Only populated when the requesting app can access the file's content. |
+| file.host | Oldest accesible parent in file path. |
+| file.site | Accesible folder path to file. |
